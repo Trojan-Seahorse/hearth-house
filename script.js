@@ -136,6 +136,7 @@
     const phaseStarts = [0.14, 0.24, 0.36, 0.48, 0.58, 0.68];
     phaseClasses.forEach((name, i) => body.classList.toggle(name, maxP >= phaseStarts[i]));
     body.classList.toggle('dark', maxP >= .48);
+    body.classList.toggle('scrolled', window.scrollY > 80);
 
     applySwaps(maxP);
     updateTitle(maxP);

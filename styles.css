@@ -257,9 +257,10 @@ body.dark .text-link { border-color: var(--line-light); }
   gap: clamp(32px, 5vw, 88px);
 }
 .hero__cue {
-  position: absolute;
+  position: fixed;
   left: 50%;
-  bottom: 26px;
+  bottom: 24px;
+  z-index: 20;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -270,7 +271,9 @@ body.dark .text-link { border-color: var(--line-light); }
   text-transform: uppercase;
   color: var(--muted-2);
   white-space: nowrap;
+  transition: opacity .4s var(--ease);
 }
+body.scrolled .hero__cue { opacity: 0; pointer-events: none; }
 .hero__cue-line {
   position: relative;
   width: 54px;
