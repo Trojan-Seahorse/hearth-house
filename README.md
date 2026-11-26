@@ -18,4 +18,6 @@ Open <http://localhost:8000>.
 
 ## Deploy
 
+Live: <https://trojan-seahorse.github.io/hearth-house/>
+
 GitHub Pages, branch `main`, root. `.nojekyll` is included.
