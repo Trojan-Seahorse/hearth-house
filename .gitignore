@@ -1,0 +1,9 @@
+node_modules/
+shots/
+*.log
+shot.js
+mobile-shot.js
+scene-test.js
+test-*.js
+debug-*.js
+og-shot.js
