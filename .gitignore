@@ -6,6 +6,10 @@ mobile-shot.js
 scene-test.js
 test-*.js
 debug-*.js
+audit-*.js
+check-*.js
+extract-*.js
+zh-sections.js
 og-shot.js
 og.png
 live-test.js

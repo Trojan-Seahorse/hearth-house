@@ -2,6 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <script>
+    (() => {
+      const param = new URLSearchParams(location.search).get('lang');
+      let stored = null;
+      try { stored = localStorage.getItem('hearth-lang'); } catch (e) {}
+      const system = (navigator.languages && navigator.languages[0]) || navigator.language || 'en';
+      const valid = (v) => v === 'zh' || v === 'en';
+      let lang = valid(param) ? param : valid(stored) ? stored : system.toLowerCase().startsWith('zh') ? 'zh' : 'en';
+      if (valid(param)) {
+        try { localStorage.setItem('hearth-lang', lang); } catch (e) {}
+      }
+      document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+      document.documentElement.dataset.lang = lang;
+      window.__hearthLang = lang;
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Hearth — A calmer home, by design.</title>
   <meta name="description" content="Hearth is a quiet intelligence for the places you live.">
@@ -449,6 +465,7 @@
     </div>
   </div>
 
+  <script src="i18n.js" defer></script>
   <script src="script.js" defer></script>
 </body>
 </html>

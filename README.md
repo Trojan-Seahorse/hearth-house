@@ -5,8 +5,14 @@ A fictional ambient-home-intelligence marketing page that becomes something else
 - `index.html` — the site
 - `styles.css` — visual system and scene styling
 - `script.js` — scroll narrative, subtle corruption, audio, and the door
+- `i18n.js` — automatic Chinese/English copy selection
 - No external assets, no analytics, no network requests
 - Hearth is not a real product. This is a short horror story in the shape of a landing page.
+
+## Language
+
+The page follows the browser language: `zh-*` gets Simplified Chinese, everything
+else gets English. Force a language with `?lang=zh` or `?lang=en`.
 
 ## Run locally
 

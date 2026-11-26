@@ -3,6 +3,9 @@
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
   const clamp = (v, min = 0, max = 1) => Math.min(max, Math.max(min, v));
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const I18n = window.HearthI18n || { isZh: false, t: (key) => key };
+  const tr = (key) => I18n.t(key);
+  const zh = !!I18n.isZh;
 
   const body = document.body;
   const root = document.documentElement;
@@ -35,27 +38,28 @@
   let maxP = 0;
   let ticking = false;
   let lastWhisper = '';
+  let whisperTimer = null;
   let modalShown = false;
   let opened = false;
   let soundOn = false;
   let audio = null;
 
   const titleBreaks = [
-    [0, 'Hearth — A calmer home, by design.'],
-    [0.16, 'Hearth — Listening'],
-    [0.30, 'Hearth — 1 presence detected'],
-    [0.44, 'Hearth — 2 presences detected'],
-    [0.56, 'Hearth — Please remain still'],
-    [0.70, 'Hearth — Do not open the door'],
+    [0, tr('Hearth — A calmer home, by design.')],
+    [0.16, tr('Hearth — Listening')],
+    [0.30, tr('Hearth — 1 presence detected')],
+    [0.44, tr('Hearth — 2 presences detected')],
+    [0.56, tr('Hearth — Please remain still')],
+    [0.70, tr('Hearth — Do not open the door')],
   ];
 
   const whispers = [
-    [0.10, 'Good evening.'],
-    [0.22, 'The living room is ready.'],
-    [0.34, 'You’ve been reading for a while.'],
-    [0.46, 'You are not on the member list.'],
-    [0.58, 'Please remain still.'],
-    [0.68, 'Do not open the door.'],
+    [0.10, tr('Good evening.')],
+    [0.22, tr('The living room is ready.')],
+    [0.34, tr('You’ve been reading for a while.')],
+    [0.46, tr('You are not on the member list.')],
+    [0.58, tr('Please remain still.')],
+    [0.68, tr('Do not open the door.')],
   ];
 
   function setStatus(text) {
@@ -67,6 +71,10 @@
     lastWhisper = text;
     whisperText.textContent = text;
     whisper.classList.toggle('is-on', true);
+    window.clearTimeout(whisperTimer);
+    whisperTimer = window.setTimeout(() => {
+      if (!body.classList.contains('near-door')) whisper.classList.remove('is-on');
+    }, 4800);
   }
 
   function applySwaps(p) {
@@ -93,7 +101,7 @@
 
   function updateAmbient(p, dp) {
     if (body.classList.contains('afterword-open')) {
-      setStatus('Hearth · Afterword');
+      setStatus('Hearth · ' + tr('Afterword'));
       whisper.classList.remove('is-on');
       return;
     }
@@ -106,15 +114,15 @@
     if (dp > 0.01) status = 'You are not alone';
     if (dp > .72) status = 'Please remain still';
     if (opened) status = 'Home';
-    setStatus('Hearth · ' + status);
+    setStatus('Hearth · ' + tr(status));
 
     let line = '';
     for (const [at, text] of whispers) {
       if (p >= at) line = text;
     }
-    if (dp > .48) line = 'Do not open the door.';
-    if (dp > .8) line = 'It is already inside.';
-    if (opened) line = 'You’re home.';
+    if (dp > .48) line = tr('Do not open the door.');
+    if (dp > .8) line = tr('It is already inside.');
+    if (opened) line = tr('You’re home.');
     setWhisper(line);
 
     if (p >= .38) presenceCount.textContent = '02';
@@ -188,7 +196,7 @@
     if (modalShown || opened) return;
     modalShown = true;
     modal.hidden = false;
-    systemTitle.textContent = 'Unknown presence detected.';
+    systemTitle.textContent = tr('Unknown presence detected.');
     const first = modal.querySelector('button');
     if (first) window.setTimeout(() => first.focus(), 50);
   }
@@ -202,8 +210,8 @@
     if (!afterword) return;
     afterword.hidden = false;
     body.classList.add('afterword-open');
-    document.title = 'Hearth — Afterword';
-    setStatus('Hearth · Afterword');
+    document.title = tr('Hearth — Afterword');
+    setStatus('Hearth · ' + tr('Afterword'));
     whisper.classList.remove('is-on');
     window.setTimeout(() => afterword.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }), 60);
   }
@@ -235,8 +243,8 @@
       window.scrollTo({ top: target, behavior: reduce ? 'auto' : 'smooth' });
       body.classList.add('final-black');
       descentFinal.classList.add('is-on');
-      document.title = 'You’re home.';
-      setStatus('Hearth · Home');
+      document.title = tr('You’re home.');
+      setStatus('Hearth · ' + tr('Home'));
       whisper.classList.remove('is-on');
     }, 480);
   }
@@ -245,7 +253,7 @@
   $$('[data-modal]').forEach(btn => {
     btn.addEventListener('click', () => {
       const choice = btn.dataset.modal;
-      systemTitle.textContent = choice === 'deny' ? 'It already had access.' : 'Access granted.';
+      systemTitle.textContent = choice === 'deny' ? tr('It already had access.') : tr('Access granted.');
       window.setTimeout(() => closeModal(true), 360);
     });
   });
@@ -285,16 +293,19 @@
       e.preventDefault();
       const button = form.querySelector('button');
       const email = new FormData(form).get('email') || '';
+      const name = email ? String(email).split('@')[0] : '';
       if (maxP >= .5) {
-        formNote.textContent = 'It already knows where you live.';
+        formNote.textContent = tr('It already knows where you live.');
+      } else if (zh) {
+        formNote.textContent = name ? `谢谢，${name}。我们会在本周末前联系你。` : '谢谢。我们会在本周末前联系你。';
       } else {
-        formNote.textContent = `Thank you${email ? ', ' + String(email).split('@')[0] : ''}. We’ll be in touch before the end of the week.`;
+        formNote.textContent = `Thank you${name ? ', ' + name : ''}. We’ll be in touch before the end of the week.`;
       }
       if (button) {
-        button.textContent = 'Request received';
+        button.textContent = tr('Request received');
         button.disabled = true;
         window.setTimeout(() => {
-          button.textContent = 'Request another viewing ↗';
+          button.textContent = tr('Request another viewing') + ' ↗';
           button.disabled = false;
         }, 2600);
       }
@@ -350,7 +361,7 @@
   function setSound(on) {
     soundOn = on;
     soundToggle.setAttribute('aria-pressed', String(on));
-    soundToggle.textContent = on ? 'Sound on' : 'Sound off';
+    soundToggle.textContent = on ? tr('Sound on') : tr('Sound off');
 
     if (on) {
       if (!audio) audio = buildAudio();
