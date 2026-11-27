@@ -239,17 +239,18 @@ body.dark .button:hover { background: transparent; color: #d9d1c4; }
   display: inline-flex;
   gap: 10px;
   align-items: center;
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+  text-decoration-color: var(--line);
   font-family: var(--mono);
   font-size: 9px;
   letter-spacing: .12em;
   text-transform: uppercase;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 5px;
-  transition: border-color .35s var(--ease), color .35s var(--ease);
+  transition: text-decoration-color .35s var(--ease), color .35s var(--ease);
 }
-.text-link:hover { border-color: currentColor; color: var(--moss); }
-body.dark .text-link { border-color: var(--line-light); }
+.text-link:hover { text-decoration-color: currentColor; color: var(--moss); }
+body.dark .text-link { text-decoration-color: var(--line-light); }
 .hero, .manifesto, .features, .day, .testimonials, .pricing, .faq, .closing { position: relative; }
 
 /* ---------- hero ---------- */
